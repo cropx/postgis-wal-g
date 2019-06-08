@@ -21,3 +21,5 @@ RUN cd /usr/local/bin && curl -L https://github.com/wal-g/wal-g/releases/downloa
 
 COPY initdb-wal-g.sh /docker-entrypoint-initdb.d/
 
+COPY backup.sh wal-g-script.sh /usr/local/bin/
+RUN chmod 755 /usr/local/bin/backup.sh /usr/local/bin/wal-g-script.sh

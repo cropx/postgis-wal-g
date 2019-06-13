@@ -13,6 +13,7 @@ E.g.
     AWS_REGION=eu-central-1
 
 or
+
     WALG_FILE_PREFIX=/backups/
 
 If you use WALG_FILE_PREFIX, you should make sure the specified directory is backed up to external storage, to
@@ -24,12 +25,17 @@ The env-file option allows you to keep your secret external storage keys only on
 convenient way.
 
 Instantiation using Docker: e.g.
-    docker run \
-    --name my-db-container \
-    --env-file wal-g.env
 
-Instantiation using Docker-compose: e.g.
-    service postgis
+    docker run \
+      --name postgis \
+      --env-file wal-g.env \
+      dacom1/postgis-wal-g
+
+Instantiation using Docker-compose (docker-compose.yml): e.g.
+
+    services:
+      postgis:
+        env-file: wal-g.env
 
 # Scheduling full backup
 You need an external scheduler that periodically invokes the backup command on the PostGIS container.

@@ -51,18 +51,18 @@ It is assumed that you have one postgis-wal-g container running, and you can sta
 `docker-compose start [my-postgis-container]` / `docker-compose stop [my-postgis-container]`
 
 - Stop any client application of your postgis container.
-- start a bash command line on the server where your postgis container runs.
+- Start a bash command line on the server where your postgis container runs.
 - `cd` to the directory where your docker-compose.yml resides.
-- set a variable with your postgis container name:\
+- Set a variable with your postgis container name:\
   `export CONTAINER=[my-postgis-container]`\
   E.g. `export CONTAINER=postgis`
-- stop the postgis container:\
+- Stop the postgis container:\
   `docker-compose stop $CONTAINER`
-- copy your current data files, just in case you need them later on, if you have enough disk space left:\
+- Copy your current data files, just in case you need them later on, if you have enough disk space left:\
   `docker-compose run --rm -v "/var/postgis-data-copy:/data-copy" $CONTAINER sh -c 'cp -Rp $PGDATA /data-copy'`
-- delete all from the postgres data directory. It must be empty for recovery:\
+- Delete all from the postgres data directory. It must be empty for recovery:\
   `docker-compose run --rm $CONTAINER sh -c 'rm -rf $PGDATA/*'` 
-- list your backups:\
+- List your backups:\
   `docker-compose run --rm $CONTAINER wal-g backup-list` 
 - This gives a list of backups, e.g.\
 ```
@@ -74,7 +74,7 @@ base_000000010000000400000085 2019-06-13T01:07:59+02:00 000000010000000400000085
 - Recover the desired backup. This may take a while. E.g. recovery of a 3GB backup may take 2 minutes from 
 Amazon S3 storage.\
   `docker-compose run --rm $CONTAINER sh -c 'wal-g-script.sh backup-fetch $PGDATA base_000000010000000400000085'`
-- determine the timestamp that you want to recover to, in the format `2019-06-13 10:45:00+02` 
+- Determine the timestamp that you want to recover to, in the format `2019-06-13 10:45:00+02` 
 - Create a postgres recovery config file. Replace the `recovery_target_time` timestamp with your timestamp:
 ```
 docker-compose run --rm  $CONTAINER sh -c "
@@ -86,8 +86,8 @@ recovery_target_time = '2019-06-13 10:45:00+02'
 recovery_target_timeline = latest
 EOF"
 ```
-- start the recovery:\
-  `docker-compose run --rm $CONTAINER postgres`
-- start the postgis container:\
+- Run the recovery (in a temporary container):\
+  `docker-compose run --rm $CONTAINER`
+- Start the postgis container:\
   `docker-compose start $CONTAINER`
 - Start your application

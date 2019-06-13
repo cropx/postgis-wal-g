@@ -54,7 +54,7 @@ It is assumed that you have one postgis-wal-g container running, and you can sta
   `docker-compose stop $CONTAINER`
 - copy your current data files, just in case you need them later on, if you have enough disk space left:\
   `docker-compose run --rm -v "/var/postgis-data-copy:/data-copy" $CONTAINER sh -c 'cp -Rp $PGDATA /data-copy'`
-- delete all from the postgres data directory. It must be empty for recovery:\ 
+- delete all from the postgres data directory. It must be empty for recovery:\
   `docker-compose run --rm $CONTAINER sh -c 'rm -rf $PGDATA/*'` 
 - list your backups:\
   `docker-compose run --rm $CONTAINER wal-g backup-list` 
@@ -65,10 +65,11 @@ base_000000010000000400000052 2019-06-11T01:07:18+02:00 000000010000000400000052
 base_000000010000000400000082 2019-06-12T01:07:51+02:00 000000010000000400000082
 base_000000010000000400000085 2019-06-13T01:07:59+02:00 000000010000000400000085
 ```
-- Recover the desired backup. This may take a while. E.g. recovery of a 1GB backup may take 5 minutes.\ 
+- Recover the desired backup. This may take a while. E.g. recovery of a 3GB backup may take 2 minutes from 
+Amazon S3 storage.\
   `docker-compose run --rm $CONTAINER sh -c 'wal-g-script.sh backup-fetch $PGDATA base_000000010000000400000085'`
 - determine the timestamp that you want to recover to, in the format `2019-06-13 10:45:00+02` 
-- Create a postgres recovery config file. Replace the timestamp with your timestamp:
+- Create a postgres recovery config file. Replace the `recovery_target_time` timestamp with your timestamp:
 ```
 docker-compose run --rm  $CONTAINER sh -c "
 cat <<EOF > /var/lib/postgresql/data/recovery.conf

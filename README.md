@@ -19,28 +19,32 @@ or
 If you use WALG_FILE_PREFIX, you should make sure the specified directory is backed up to external storage, to
 make sure you can recover the backup in case the database server is lost.
 
-You can pass the wal-g env variables to the `docker run` command when you instantiate your container.
-Or you can put the variables in an env-file and pass a reference to that env-file to docker or docker-compose.
-The env-file option allows you to keep your secret external storage keys only on the deployment server in a 
+You need to pass the environment variables to your container.
+If you use docker-compose, We recommend that you put the variables in an env-file and 
+pass a reference to that env-file to your container.
+This allows you to keep your secret external storage keys only on the deployment server in a 
 convenient way.
 
-Instantiation using Docker: e.g.
-
-    docker run \
-      --name postgis \
-      --env-file wal-g.env \
-      dacom1/postgis-wal-g
-
-Instantiation using Docker-compose (docker-compose.yml): e.g.
+Your docker-compose.yml would then look like e.g.:
 
     services:
       postgis:
         env-file: wal-g.env
+        ...
 
 # Scheduling full backup
 You need an external scheduler that periodically invokes the backup command on the PostGIS container.
 This could be e.g. Unix/Linux cron. Your crontab entry then should be like this:
+
     0 1 * * * /usr/bin/docker exec -i my-db-container backup.sh >> /var/log/my-postgis-backup.log
+    
+# Scheduling cleanup of older backups
+You may also want to clean up older backups. You can specify the number of backups to retain with env
+variable `BACKUP_RETAIN_NUMBER`, which you can add to your wal-g config.
+Then, add a call to backup-cleanup.sh to your schedule, e.g.:
+
+    0 1 * * * /usr/bin/docker exec -i my-db-container sh -c 'backup.sh && backup-cleanup.sh' >> /var/log/my-postgis-backup.log
+
 
 # Point-in-time recovery (PITR)
 

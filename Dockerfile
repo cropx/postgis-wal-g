@@ -19,7 +19,7 @@ RUN echo $TZ > /etc/timezone && \
 
 RUN cd /usr/local/bin && curl -L https://github.com/wal-g/wal-g/releases/download/v0.2.9/wal-g.linux-amd64.tar.gz | tar xzf -
 
-COPY initdb-wal-g.sh /docker-entrypoint-initdb.d/
+COPY initdb/initdb-wal-g.sh /docker-entrypoint-initdb.d/
 
-COPY backup.sh wal-g-script.sh /usr/local/bin/
-RUN chmod 755 /usr/local/bin/backup.sh /usr/local/bin/wal-g-script.sh
+COPY *.sh /usr/local/bin/
+RUN chmod 755 /usr/local/bin/*.sh
